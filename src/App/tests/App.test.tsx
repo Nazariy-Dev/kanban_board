@@ -59,12 +59,6 @@ describe("App component tests", () => {
             const firstElement = screen.getByText(/32463/i)
             expect(firstElement).toBeInTheDocument()
         })
-        //
-
-        //
-        // describe("order preservation between searches test", () => {
-        //
-        // })
     })
     describe("drag and drop tests", () => {
         it("element changes row order after drag and drop higher", () => {

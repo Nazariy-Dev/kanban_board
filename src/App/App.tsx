@@ -44,7 +44,7 @@ function App() {
             if (JSON.stringify(prevItems) === JSON.stringify(updatedIssues)) {
                 return prevItems;
             }
-            return updatedIssues; // Data has changed, update state
+            return updatedIssues;
         });
     }, [issues]);
 
