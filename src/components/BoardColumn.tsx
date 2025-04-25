@@ -2,14 +2,12 @@ import BoardCard from "./BoardCard.tsx";
 import DropArea from "./DropArea.tsx";
 import {IGithubIssue} from "../interfaces/IGitHubIssue.ts";
 import {Box, Flex, Heading} from "@chakra-ui/react";
-import {SetStateAction} from "react";
 
 interface Props {
     title: string;
     type: string;
     items: IGithubIssue[]
     typePredicate: (issue: IGithubIssue) => boolean
-    setActiveCard: (index: SetStateAction<null | number>) => void,
     onDrop: (type: string, position: number) => void,
 }
 
@@ -18,10 +16,10 @@ const BoardColumn = (props: Props) => {
         title,
         items,
         typePredicate,
-        setActiveCard,
         onDrop,
         type
     } = props;
+
 
     return (
         <Flex _scrollbar={{display: "none"}} flexDirection="column" flexBasis="33%" overflow="auto"
@@ -44,10 +42,8 @@ const BoardColumn = (props: Props) => {
                             dataTestId={`issue-item-${issue.number}`}
                             dataPosition={`${type}-${index}`}
                             draggable={type != "inProgress"}
-                            // key={issue.id}
                             issue={issue}
                             index={index}
-                            setActiveCard={setActiveCard}
                         />
                         {type != "inProgress" &&
                             <DropArea

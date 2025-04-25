@@ -1,23 +1,22 @@
 import {fireEvent, render, screen} from "@testing-library/react";
-import {describe, it, expect, vi} from "vitest"
+import {describe, it, expect} from "vitest"
 import "@testing-library/jest-dom/vitest"
 import Header from "./Header.tsx";
 import {BrowserRouter} from "react-router-dom";
 import {Provider} from "../ui/provider.tsx";
 
-const mockedSetRouterData = vi.fn()
 
-const MockedHeader = ({setRouteData}: { setRouteData: () => void }) => {
+const MockedHeader = () => {
     return <Provider>
         <BrowserRouter>
-            <Header setRouteData={setRouteData}/>
+            <Header/>
         </BrowserRouter>
     </Provider>
 
 }
 
 describe("Search input validation test", () => {
-    render(<MockedHeader setRouteData={mockedSetRouterData}/>)
+    render(<MockedHeader/>)
 
     it("shows error when input is number", () => {
 

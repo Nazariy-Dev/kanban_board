@@ -1,21 +1,17 @@
 import {Box, Flex, Icon, Link, Spacer, Spinner, Text} from "@chakra-ui/react";
-import {IRouteData} from "../interfaces/IRouteData.ts";
 import {FaStar} from "react-icons/fa";
 import {capitalizeFirstLetter} from "../lib/functions.ts";
 import useStore from "../store/store.ts";
 import {useEffect} from "react";
 
-interface Props {
-    routeData?: IRouteData
-}
 
-function Links({routeData}: Props) {
+function Links() {
+    const {repo, fetchRepo, routeData} = useStore(state => state);
+
     useEffect(() => {
         if (!routeData) return
         fetchRepo(routeData.owner.name, routeData.repo.name)
     }, []);
-    const repo = useStore(state => state.repo);
-    const fetchRepo = useStore(state => state.fetchRepo);
     const repository = routeData?.repo
     const owner = routeData?.owner
 

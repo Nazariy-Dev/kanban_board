@@ -3,11 +3,14 @@ import {Octokit} from "octokit";
 import {IGithubIssue} from "../interfaces/IGitHubIssue.ts";
 import {IGitHubRepository} from "../interfaces/IGitHubRepository.ts"
 import {pagesRemaining} from "../lib/functions.ts";
+import {IRouteData} from "../interfaces/IRouteData.ts";
 
 const octokit = new Octokit()
 
 interface IStoreState {
     issues: IGithubIssue[],
+    boardItems: IGithubIssue[],
+    setBoardItems: (items: IGithubIssue[]) => void
     fetchIssues: (owner: string, repo: string, page: number) => void,
     issuesHaveMorePages: boolean,
     issuesAreLoading: boolean,
@@ -17,13 +20,20 @@ interface IStoreState {
     repo: IGitHubRepository | null,
     fetchRepo: (owner: string, repo: string) => void,
     repoIsLoading: boolean,
-    repoError: string
+    repoError: string,
+
+    routeData: IRouteData,
+    setRouteData: (data: IRouteData) => void,
+
+    activeCard: number | null,
+    setActiveCard: (cardNumber: number | null) => void
 }
 
 const useStore = create<IStoreState>(
     (set) => ({
         issuesHaveMorePages: true,
         issues: [],
+        boardItems: [],
         issuesAreLoading: false,
         issuesError: "",
 
@@ -32,7 +42,20 @@ const useStore = create<IStoreState>(
         repoIsLoading: false,
         issuesApiURL: "",
 
-        fetchIssues: async (owner: string, repo: string, page: number = 1) => {
+        routeData: {
+            owner: {
+                name: "",
+                url: ""
+            },
+            repo: {
+                name: "",
+                url: ""
+            }
+        },
+
+        activeCard: 0,
+
+        fetchIssues: async (owner, repo, page = 1) => {
 
             try {
                 set((state) => {
@@ -44,16 +67,23 @@ const useStore = create<IStoreState>(
                 const haveMorePages = pagesRemaining(issues.headers.link)
 
                 set((state) => {
-                    return {...state, issues: issues.data, issuesAreLoading: false, issuesHaveMorePages: haveMorePages, issuesApiURL: apiURL, issuesError: ""} ;
+                    return {
+                        ...state,
+                        issues: issues.data,
+                        issuesAreLoading: false,
+                        issuesHaveMorePages: haveMorePages,
+                        issuesApiURL: apiURL,
+                        issuesError: ""
+                    };
                 })
             } catch (error) {
                 set((state) => {
-                    return {...state, issuesError: error.message,issues: []};
+                    return {...state, issuesError: error.message, issues: []};
                 })
             }
         },
 
-        fetchRepo: async (owner: string, repoName: string) => {
+        fetchRepo: async (owner, repoName) => {
             try {
                 set((state) => {
                     return {...state, repoIsLoading: true};
@@ -67,6 +97,33 @@ const useStore = create<IStoreState>(
                     return {...state, repoError: error.message};
                 })
             }
+        },
+        setBoardItems: (updatedItems) => {
+            // Compare if the new list is different from the previous list to prevent unnecessary re-renders
+            set((state) => {
+                if (JSON.stringify(state.boardItems) !== JSON.stringify(updatedItems)) {
+                    return {...state, boardItems: updatedItems}
+                } else {
+                    return state
+                }
+            })
+        },
+
+        setRouteData: (data) => {
+            set((state) => {
+                return {
+                    ...state, routeData: data
+                }
+            })
+        },
+
+        setActiveCard: (cardNumber) => {
+            set((state)=> {
+                return {
+                    ...state,
+                    activeCard: cardNumber
+                }
+            })
         }
     })
 )

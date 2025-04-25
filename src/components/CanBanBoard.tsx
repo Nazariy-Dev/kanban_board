@@ -1,24 +1,23 @@
 import {Flex} from "@chakra-ui/react"
-import {IGithubIssue} from "../interfaces/IGitHubIssue"
+import useStore from "../store/store.ts";
 import IssuesColumn from "./BoardColumn.tsx"
-import React, { SetStateAction} from "react";
+import React from "react";
 
 interface Props {
-    items: IGithubIssue[],
-    setActiveCard: (index: SetStateAction<null | number>) => void,
     onDrop: (type: string, position: number) => void,
 }
 
-function CanBanBoard({items, setActiveCard, onDrop}: Props) {
+function CanBanBoard({onDrop}: Props) {
+    const {boardItems} = useStore(state => state)
+
     return (
         <>
             <Flex gap="6" mt="6" height="600px" overflowX={"auto"}>
                 <IssuesColumn
                     type="open"
                     title="ToDo"
-                    items={items}
+                    items={boardItems}
                     typePredicate={(issue) => issue.state == "open"}
-                    setActiveCard={setActiveCard}
                     onDrop={onDrop}
                 >
 
@@ -26,18 +25,16 @@ function CanBanBoard({items, setActiveCard, onDrop}: Props) {
                 <IssuesColumn
                     type="closed"
                     title="Closed"
-                    items={items}
+                    items={boardItems}
                     typePredicate={(issue) => issue.state == "closed"}
-                    setActiveCard={setActiveCard}
                     onDrop={onDrop}
                 >
 
                 </IssuesColumn>
                 <IssuesColumn
                     title="In Progress"
-                    items={items}
+                    items={boardItems}
                     typePredicate={(issue) => issue.state == "open" && issue.assignees.length > 0}
-                    setActiveCard={setActiveCard}
                     onDrop={onDrop}
                     type="inProgress"
                 >

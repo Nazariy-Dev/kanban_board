@@ -1,9 +1,8 @@
-import {FormEvent, SetStateAction, useRef, useState} from 'react';
+import {FormEvent, useRef, useState} from 'react';
 import Search from "../Search.tsx";
 import {Box, Button, Flex, Text} from "@chakra-ui/react";
 import useStore from '../../store/store.ts';
 import {getRouteData} from "../../lib/functions.ts";
-import {IRouteData} from "../../interfaces/IRouteData.ts";
 import {useSearchParams} from "react-router-dom";
 import {ColorModeButton} from "../ui/color-mode.tsx";
 
@@ -11,10 +10,10 @@ import {ColorModeButton} from "../ui/color-mode.tsx";
 const githubRepoRegex = /^(https:\/\/github\.com\/[\w-]+\/[\w-]+(?:\.git)?)$|^(git@github\.com:[\w-]+\/[\w-]+\.git)$/;
 
 
-function Header({setRouteData}: { setRouteData: (url: SetStateAction<IRouteData | undefined>) => void }) {
+function Header() {
     const [urlIsValid, setUrlIsValid] = useState(true)
     const searchField = useRef<HTMLInputElement>(null)
-    const {fetchIssues} = useStore(state => state)
+    const {fetchIssues, setRouteData} = useStore(state => state)
     const [searchParams] = useSearchParams()
     const currentPage = Number(searchParams.get("page")) || 1
 

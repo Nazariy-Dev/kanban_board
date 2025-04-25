@@ -1,29 +1,29 @@
-import {useEffect, useState, useCallback} from 'react'
+import {useEffect, useCallback} from 'react'
 import useStore from "../store/store.ts";
 import Header from "../components/Header/Header.tsx";
 import CanBanBoard from '../components/CanBanBoard.tsx';
 import Links from "../components/Links.tsx";
-import {IRouteData} from "../interfaces/IRouteData.ts";
 import {Container, Heading, Spinner} from "@chakra-ui/react";
-import {Outlet, useSearchParams} from "react-router-dom";
+import {useSearchParams} from "react-router-dom";
 import Pagination from "../components/Pagination.tsx";
 import {rememberOrder, restoreOrder} from "../lib/functions.ts";
 
 
 function App() {
-    const [routeData, setRouteData] = useState<IRouteData>()
-    const issues = useStore(state => state.issues);
     const {
+        issues,
+        boardItems,
+        setBoardItems,
         issuesAreLoading,
         fetchIssues,
         issuesHaveMorePages: haveMorePages,
         issuesApiURL,
-        issuesError
+        issuesError,
+        routeData,
+        activeCard
     } = useStore(state => state)
     const [searchParams] = useSearchParams()
     const currentPage = Number(searchParams.get("page")) || 1
-    const [boardItems, setBoardItems] = useState(issues)
-    const [activeCard, setActiveCard] = useState<number | null>(null)
 
     useEffect(() => {
         if (!routeData) return
@@ -39,13 +39,7 @@ function App() {
             updatedIssues = restoreOrder(issues, JSON.parse(localStorageIssues));
         }
 
-        setBoardItems(prevItems => {
-            // Compare if the new list is different from the previous list to prevent unnecessary re-renders
-            if (JSON.stringify(prevItems) === JSON.stringify(updatedIssues)) {
-                return prevItems;
-            }
-            return updatedIssues;
-        });
+        setBoardItems(updatedIssues);
     }, [issues]);
 
     const onDrop = useCallback((type: string, position: number) => {
@@ -68,16 +62,15 @@ function App() {
 
     return (
         <Container py={6} position="relative">
-            <Header setRouteData={setRouteData}/>
+            <Header />
             {issuesAreLoading && !issuesError &&
                 <Spinner position="absolute" top="40%" left={"50%"} translate="-50%, -50%" zIndex={10} mt={10} size="sm"
                          alignSelf="center"/>}
 
             {routeData && !issuesError ?
                 <>
-                    <Links routeData={routeData}/>
-                    <Outlet context={{setActiveCard, onDrop, issues}}/>
-                    <CanBanBoard setActiveCard={setActiveCard} onDrop={onDrop} items={boardItems}/>
+                    <Links/>
+                    <CanBanBoard onDrop={onDrop}/>
                 </> :
                 !issuesError ? <Heading mt={10}>No issues yet, type repo URL above...</Heading> : ""
             }

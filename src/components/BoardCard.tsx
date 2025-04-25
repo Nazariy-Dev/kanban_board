@@ -1,19 +1,21 @@
 import {Card, Flex, Icon, Text, Link} from "@chakra-ui/react";
 import {IGithubIssue} from "../interfaces/IGitHubIssue.ts";
-import React, {SetStateAction} from "react";
+import React from "react";
 import {FaExternalLinkAlt} from "react-icons/fa";
 import moment from 'moment';
+import useStore from "../store/store.ts";
 
 interface Props {
     index: number,
-    setActiveCard: (index: SetStateAction<null | number>) => void,
     issue: IGithubIssue,
     draggable: boolean,
     dataTestId: string,
     dataPosition: string,
 }
 
-const BoardCard = ({index, setActiveCard, issue, draggable = true, dataTestId, dataPosition}: Props) => {
+const BoardCard = ({index, issue, draggable = true, dataTestId, dataPosition}: Props) => {
+   const {setActiveCard} = useStore(state => state)
+
     return (
         <Card.Root _hover={{cursor: "grab"}} _active={{opacity: .4}} p="4" draggable={draggable}
                    onDragStart={() => setActiveCard(index)}
